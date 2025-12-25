@@ -83,11 +83,29 @@
     reader.readAsDataURL(file);
   }
 
-  function analyze() {
-    document.getElementById("result").innerHTML =
-      "Image received. AI style analysis will be added next.";
+async function analyze() {
+  if (!preview.src) {
+    alert("Please upload or paste an image first");
+    return;
   }
+
+  document.getElementById("result").innerHTML = "Analyzing image...";
+
+  const response = await fetch("/api/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      imageBase64: preview.src
+    })
+  });
+  const data = await response.json();
+
+  document.getElementById("result").innerHTML =
+    "<b>Suggested Style:</b> " + data.style +
+    "<br><br><b>Reason:</b><br>" + data.reason;
+}
 </script>
 
 </body>
 </html>
+
